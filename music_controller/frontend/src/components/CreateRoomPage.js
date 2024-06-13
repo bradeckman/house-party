@@ -39,7 +39,17 @@ export default class RoomJoinPage extends Component {
     }
 
     handleRoomButtonPress() {
-
+        const requestOptions = {
+            'method': 'POST',
+            'headers': {'Content-Type': 'application/json'},
+            'body': JSON.stringify({
+                votes_to_skip: this.state.votesToSkip,
+                guest_can_pause: this.state.guestCanPause
+            })
+        };
+        fetch('/api/create-room', requestOptions)
+        .then((response) => response.json())
+        .then((data) => console.log(data));
     }
 
     render() {
