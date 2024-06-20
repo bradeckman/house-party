@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
+import { Grid, Button, Typography } from '@material-ui/core';
 
 
-function Room(props) {
+function Room() {
     
     const { roomCode } = useParams();
     const initialState = {
@@ -26,12 +27,34 @@ function Room(props) {
       })
   },[roomCode,setRoomData])
   return (
-    <div>
-      <h3>{roomCode}</h3>
-      <p>Votes: {roomData.votesToSKip}</p>  
-      <p>Guest: {roomData.guestCanPause.toString()}</p>
-      <p>Host: {roomData.isHost.toString()}</p>  
-    </div>
+    <Grid container spacing={1}>
+      <Grid item xs={12} align='center'>
+        <Typography variant='h4' component='h4'>
+          Code: {roomCode}
+        </Typography>
+      </Grid>
+      <Grid item xs={12} align='center'>
+        <Typography variant='h6' component='h6'>
+          Votes: {roomData.votesToSKip}
+        </Typography>
+      </Grid>
+      <Grid item xs={12} align='center'>
+        <Typography variant='h6' component='h6'>
+          Guest Can Pause: {roomData.guestCanPause.toString()}
+        </Typography>
+      </Grid>
+      <Grid item xs={12} align='center'>
+        <Typography variant='h6' component='h6'>
+          Host: {roomData.guestCanPause.toString()}
+        </Typography>      
+      </Grid>
+      <Grid item xs={12} align='center'>
+        <Button variant="contained" color="secondary" to="/" component={Link}> Leave Room </Button>
+      </Grid>
+    </Grid>
+
+
+
   )
 }
 
