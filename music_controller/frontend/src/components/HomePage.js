@@ -39,8 +39,6 @@ function HomePage() {
 
   const clearRoomCode = () => {
     setRoomCode(null);
-    console.log("in callback");
-    console.log(roomCode);
   };
 
   return (
