@@ -96,6 +96,7 @@ function Room(props) {
         .then((response) => response.json())
         .then((data) => {
           window.location.replace(data.url);
+          
         })
       }
     })
