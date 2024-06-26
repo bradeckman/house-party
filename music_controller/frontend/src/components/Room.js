@@ -2,17 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Grid, Button, Typography } from '@material-ui/core';
 import CreateRoomPage from "./CreateRoomPage";
+import MusicPlayer from './MusicPlayer';
 
 
 function Room(props) {
     
   const { roomCode } = useParams();
   const initialState = {
-  votesToSkip: 2,
-  guestCanPause: false,
-  isHost: false,
-  showSettings: false,
-  roomCode: roomCode,
+    votesToSkip: 2,
+    guestCanPause: false,
+    isHost: false,
+    showSettings: false,
+    roomCode: roomCode,
+    song: {}
   }
   const [roomData, setRoomData] = useState(initialState);
   const [spotifyAuthenticated, setSpotifyAuthenticated] = useState(false);
@@ -24,6 +26,24 @@ function Room(props) {
       showSettings: value, 
     }));
   };
+
+  const getCurrentSong = () => {
+    fetch('/spotify/current-song')
+    .then((response) => {
+      if (!response.ok || response.status == 204) {
+        return {};
+      }
+      else {
+        return response.json();
+      }
+    })
+    .then((data) => {
+      setRoomData({
+        ...roomData,
+        song: data
+      })
+    })
+  }
 
   const renderSettingsButton = () => {
     return (
@@ -90,19 +110,26 @@ function Room(props) {
     fetch('/spotify/is-authenticated')
     .then((response) => response.json())
     .then((data) => {
+      console.log(data.status);
       setSpotifyAuthenticated(data.status);
       if (!data.status) {
         fetch('/spotify/get-auth-url')
         .then((response) => response.json())
         .then((data) => {
           window.location.replace(data.url);
-          
         })
       }
     })
   }
 
   useEffect(getRoomDetails,[roomData.roomCode]);
+  useEffect(() => {
+    const interval = setInterval(getCurrentSong, 1000)
+    return () => {
+        clearInterval(interval);
+      }
+    }
+  );
 
   if (roomData.showSettings) {
     return renderSettings();
@@ -114,21 +141,7 @@ function Room(props) {
           Code: {roomCode}
         </Typography>
       </Grid>
-      <Grid item xs={12} align='center'>
-        <Typography variant='h6' component='h6'>
-          Votes: {roomData.votesToSkip}
-        </Typography>
-      </Grid>
-      <Grid item xs={12} align='center'>
-        <Typography variant='h6' component='h6'>
-          Guest Can Pause: {roomData.guestCanPause.toString()}
-        </Typography>
-      </Grid>
-      <Grid item xs={12} align='center'>
-        <Typography variant='h6' component='h6'>
-          Host: {roomData.isHost.toString()}
-        </Typography>      
-      </Grid>
+      <MusicPlayer {...roomData.song}/>
       {roomData.isHost ? renderSettingsButton() : null}
       <Grid item xs={12} align='center'>
         <Button variant="contained" color="secondary" onClick={leaveRoomButtonPressed}> Leave Room </Button>
