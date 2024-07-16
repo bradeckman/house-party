@@ -9,8 +9,7 @@ function Room(props) {
     
   const { roomCode } = useParams();
   const initialState = {
-    votesToSkip: 2,
-    guestCanPause: false,
+    votesThreshold: 2,
     isHost: false,
     showSettings: false,
     roomCode: roomCode,
@@ -59,8 +58,7 @@ function Room(props) {
         <Grid item xs={12} align="center">
           <CreateRoomPage 
             update={true} 
-            initialVotesToSkip={roomData.votesToSkip} 
-            initialGuestCanPause={roomData.guestCanPause} 
+            initialVotesThreshold={roomData.votesThreshold} 
             roomCode={roomData.roomCode} 
             updateCallback={getRoomDetails}
           />
@@ -96,8 +94,7 @@ function Room(props) {
     .then(data => {
       setRoomData({
         ...roomData, 
-        votesToSkip: data.votes_to_skip,
-        guestCanPause: data.guest_can_pause,
+        votesThreshold: data.votes_threshold,
         isHost: data.is_host,
       })
       if (data.is_host) {
@@ -134,20 +131,22 @@ function Room(props) {
   if (roomData.showSettings) {
     return renderSettings();
   }
-  return (
-    <Grid container spacing={1}>
-      <Grid item xs={12} align='center'>
-        <Typography variant='h4' component='h4'>
-          Code: {roomCode}
-        </Typography>
+  else{
+    return (
+      <Grid container spacing={1}>
+        <Grid item xs={12} align='center'>
+          <Typography variant='h4' component='h4'>
+            Code: {roomCode}
+          </Typography>
+        </Grid>
+        <MusicPlayer {...roomData.song}/>
+        {roomData.isHost ? renderSettingsButton() : null}
+        <Grid item xs={12} align='center'>
+          <Button variant="contained" color="secondary" onClick={leaveRoomButtonPressed}> Leave Room </Button>
+        </Grid>
       </Grid>
-      <MusicPlayer {...roomData.song}/>
-      {roomData.isHost ? renderSettingsButton() : null}
-      <Grid item xs={12} align='center'>
-        <Button variant="contained" color="secondary" onClick={leaveRoomButtonPressed}> Leave Room </Button>
-      </Grid>
-    </Grid>
-  )
+    )
+  }
 }
 
 export default Room;

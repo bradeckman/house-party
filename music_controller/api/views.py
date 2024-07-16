@@ -41,17 +41,15 @@ class CreateRoomView(APIView):
             self.request.session.create()
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            guest_can_pause = serializer.data.get('guest_can_pause')
-            votes_to_skip = serializer.data.get('votes_to_skip')
+            votes_threshold = serializer.data.get('votes_threshold')
             host = self.request.session.session_key
             queryset = Room.objects.filter(host=host)
             if queryset.exists():
                 room = queryset[0]
-                room.guest_can_pause = guest_can_pause
-                room.votes_to_skip = votes_to_skip
-                room.save(update_fields=['guest_can_pause', 'votes_to_skip'])
+                room.votes_threshold = votes_threshold
+                room.save(update_fields=['votes_threshold'])
             else:
-                room = Room(host=host, guest_can_pause=guest_can_pause, votes_to_skip=votes_to_skip)
+                room = Room(host=host, votes_threshold=votes_threshold)
                 room.save()
 
             self.request.session['room_code'] = room.code
@@ -85,7 +83,7 @@ class UserInRoom(APIView):
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
         data = {
-            'code': self.request.session.get('room_code')  #wil return None if user not in Room
+            'code': self.request.session.get('room_code')  #will return None if user not in Room
         }
         
         return JsonResponse(data, status=status.HTTP_200_OK)
@@ -113,8 +111,7 @@ class UpdateRoom(APIView):
             self.request.session.create()
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            guest_can_pause = serializer.data.get('guest_can_pause')
-            votes_to_skip = serializer.data.get('votes_to_skip')
+            votes_threshold = serializer.data.get('votes_threshold')
             code = serializer.data.get('code')
             queryset = Room.objects.filter(code=code)
             if not queryset.exists():
@@ -123,9 +120,8 @@ class UpdateRoom(APIView):
             user_id = self.request.session.session_key
             if room.host != user_id:
                 return Response({'message': 'User is not the host of the provided room'}, status=status.HTTP_403_FORBIDDEN)
-            room.guest_can_pause = guest_can_pause
-            room.votes_to_skip = votes_to_skip
-            room.save(update_fields=['guest_can_pause', 'votes_to_skip'])
+            room.votes_threshold = votes_threshold
+            room.save(update_fields=['votes_threshold'])
             print(RoomSerializer(room).data)
             return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
             

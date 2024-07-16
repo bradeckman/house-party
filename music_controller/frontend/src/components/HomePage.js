@@ -3,8 +3,9 @@ import RoomJoinPage from "./RoomJoinPage";
 import CreateRoomPage from "./CreateRoomPage";
 import Room from "./Room";
 import { Grid, Button, ButtonGroup, Typography } from '@material-ui/core';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from "react-router-dom";
 import Info from "./Info";
+
 
 function HomePage() {
 
@@ -12,10 +13,13 @@ function HomePage() {
 
   useEffect(() => {
     async function autoEnter() {
+      console.log('in autoEnter()');
       fetch('/api/user-in-room')
       .then((response) => response.json())
       .then((data) => {
+        console.log(data);
         setRoomCode(data.code);
+        console.log(data.code);
       })
     };
     autoEnter();
@@ -46,7 +50,7 @@ function HomePage() {
   return (
     <Router>
       <Routes>
-        <Route exact path="/" element={<Home />}/>
+        <Route exact path="/" element={ roomCode ? <Navigate to={`/room/${roomCode}`} /> : <Home />}/>
         <Route path="/join" element={<RoomJoinPage />} />
         <Route path="/info" element={<Info />} />
         <Route path="/create" element={<CreateRoomPage />} />
