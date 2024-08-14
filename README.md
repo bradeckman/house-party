@@ -5,6 +5,8 @@
 With <b> house party </b>, everyone is the DJ! &#128293;  &#128293;
 Simply create a room and have your guests vote on songs.
 Using your Spotify account, the queue is dynamically updated and adds songs that reach the vote threshold.
+![image](https://github.com/user-attachments/assets/5593192c-0d0c-4b0c-819d-92ab27615186)
+
 _______________________
 **For devs**
 
